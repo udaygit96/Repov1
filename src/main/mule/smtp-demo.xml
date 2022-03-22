@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2aec45be-7284-4bb8-937a-c0eb14c7c2aa" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="5e727f46-5f40-4372-ad07-08e10ffbefdd" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="uday559.t@gmail.com" password="udayuday96#">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="ee927a97-aa89-4889-b5bb-65d9405b50f6" >
+		<file:connection />
+	</file:config>
+	<flow name="smtp-demoFlow" doc:id="877f04b1-5e3f-459b-89c8-90b0e0e7f4f8" >
+		<http:listener doc:name="Listener" doc:id="59bd513c-3ccc-4fb6-9b61-ce4a336ae6dd" config-ref="HTTP_Listener_config" path="smtp"/>
+		<file:read doc:name="Read" doc:id="0f5b275f-17ad-4770-bba3-6a0858a11ac3" config-ref="File_Config" path="C:\Users\Lenovo\Desktop\Mulesoft stuff\SMTP\Duplicate file list.txt"/>
+		<email:send doc:name="Send" doc:id="1b4010db-d096-4714-9805-44c66c2f89a3" config-ref="Email_SMTP" fromAddress="uday559.t@gmail.com" subject="You got this mail from MULESOFT" attachmentsContentTransferEncoding="Binary">
+			<email:to-addresses>
+				<email:to-address value="uday107.t@gmail.com" />
+			</email:to-addresses>
+			<email:body contentTransferEncoding="Binary">
+				<email:content ><![CDATA[please find duplicate attached txt file]]></email:content>
+			</email:body>
+			<email:attachments ><![CDATA[#[{
+      "attachments.txt" : payload
+}]]]></email:attachments>
+		</email:send>
+		<logger level="INFO" doc:name="Logger" doc:id="23b77a9e-09e8-4997-a92d-bfa9ae10f5fb" message="#[payload]"/>
+	</flow>
+</mule>
